@@ -1,0 +1,82 @@
+
+name: Correcció manual dels notebooks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  correccio:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write        # <-- necessari per fer push
+
+    env:
+      SOLUTIONS_REPO: https://github.com/DCC-UAB/XNAP_Solutions
+
+    steps:
+      - name: Checkout repositori estudiant
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Instal·lar dependències
+        run: |
+          pip install -r requirements.txt
+          pip install pytest nbformat nbconvert sympy
+
+      # -----------------------
+      # CLONAR SOLUCIONS
+      # -----------------------
+      - name: Clonar repositori de solucions
+        env:
+          TOKEN: ${{ secrets.ORG_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "❌ FALTA el secret ORG_TOKEN al repositori!"
+            exit 1
+          fi
+          git clone --depth 1 https://$TOKEN@github.com/DCC-UAB/XNAP_Solutions solutions_repo
+
+      # -----------------------
+      # EXECUTAR TESTS
+      # -----------------------
+      - name: Executar tests
+        run: |
+          pytest --student-repo . --solutions-repo solutions_repo
+
+      # -----------------------
+      # PUJAR INFORMES (ARTIFACTS)
+      # -----------------------
+      - name: Upload informe Markdown
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-md
+          path: Avaluacio/*.md
+
+      - name: Upload informe HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-html
+          path: Avaluacio/*.html
+
+      # -----------------------
+      # PUSH DE LA CARPETA Avaluacio/
+      # -----------------------
+      - name: Commit dels informes al repositori
+        run: |
+          git config user.name "Correccio Automatica"
+          git config user.email "actions@github.com"
+
+          git add Avaluacio/
+
+          if git diff --cached --quiet; then
+            echo "No hi ha canvis per commitejar."
+            exit 0
+          fi
+
+          git commit -m "Afegits informes d'avaluació automàtica"
+          git push origin HEAD:${GITHUB_REF#refs/heads/}

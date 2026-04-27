@@ -1,0 +1,22 @@
+# Variables d'entorn (mai s'han de pujar al repositori)
+.env
+
+# Bytecode de Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Entorns virtuals
+.venv/
+venv/
+env/
+
+# Distribució / empaquetament
+dist/
+build/
+*.egg-info/
+
+# Editors
+.idea/
+.vscode/
+*.swp
