@@ -16,7 +16,7 @@ LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTfU
 WITH row 
 WHERE row.Id IS NOT NULL
 MERGE (i:Individu {individuId: toInteger(row.Id)})
-SET i.name = row.name, i.surname = row.surname, i.secondSurname = row.second_surname, i.year = toInteger(row.Year)
+SET i.name = row.name, i.surname = row.surname, i.secondSurname = row.second_surname, i.anyPadro = toInteger(row.Year)
 RETURN count(i);
 
 
