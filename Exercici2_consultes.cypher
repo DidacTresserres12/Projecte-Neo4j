@@ -9,6 +9,16 @@ AND i.secondSurname IS NOT NULL AND i.secondSurname <> "nan" AND i.secondSurname
 RETURN h.anyPadro AS AnyPadro, count(DISTINCT i) AS NumeroHabitants, collect(DISTINCT (i.surname + " " + i.secondSurname)) AS LlistaCognoms
 ORDER BY AnyPadro
 
+// D'aquesta manera eliminem les parelles de cognoms duplicades i els habitants que tenen un nan a algun dels cognoms (NO SÉ SI ÉS EXACTAMENT EL QUE DEMANEN)
+
+// Aquí podem veure com existeixen inidividus amb un nan a alguns dels cognoms:
+
+MATCH (i:Individu)-[:VIU]->(h:Habitatge)
+WHERE h.location = "CR" 
+AND (i.surname IS NULL OR i.surname = "nan" OR i.surname = "" OR i.secondSurname IS NULL OR i.secondSurname = "nan" OR i.secondSurname = "") 
+RETURN i.name
+
+
 
 B) Retorna el nom de les persones que vivien al mateix habitatge que "rafel marti" (no té segon cognom) segons el padró de 1838 de Sant Feliu de Llobregat (SFLL). Retorna la informació en mode graf i mode llista. 
 
