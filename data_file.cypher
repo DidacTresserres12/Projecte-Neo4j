@@ -8,8 +8,9 @@ MATCH (n) DETACH DELETE n;
 CREATE CONSTRAINT UniqueIndividu IF NOT EXISTS FOR (i:Individu) REQUIRE i.individuId IS NODE KEY;
 CREATE CONSTRAINT UniqueHabitatge IF NOT EXISTS FOR (h:Habitatge) REQUIRE (h.llarId, h.anyPadro, h.location) IS NODE KEY;
 
+// Índex per a les cerques ràpides per any en individus
+CREATE INDEX index_any_individu IF NOT EXISTS FOR (i:Individu) ON (i.anyPadro);
 CREATE INDEX NomCognom IF NOT EXISTS FOR (i:Individu) ON (i.name, i.surname);
-
 
 // 3. CÀRREGA NODE: INDIVIDU
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTfU6oJBZhmhzzkV_0-avABPzHTdXy8851ySDbn2gq32WwaNmYxfiBtCGJGOZsMgCWjzlEGX4Zh1wqe/pub?output=csv' AS row
