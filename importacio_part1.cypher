@@ -1,5 +1,3 @@
-//Generació de dades projecte Neo4j grup 10
-
 // 1. NETEJA
 MATCH (n) DETACH DELETE n;
 
@@ -9,8 +7,10 @@ CREATE CONSTRAINT UniqueIndividu IF NOT EXISTS FOR (i:Individu) REQUIRE i.indivi
 CREATE CONSTRAINT UniqueHabitatge IF NOT EXISTS FOR (h:Habitatge) REQUIRE (h.llarId, h.anyPadro, h.location) IS NODE KEY;
 
 // Índex per a les cerques ràpides per any en individus
-CREATE INDEX index_any_individu IF NOT EXISTS FOR (i:Individu) ON (i.anyPadro);
-CREATE INDEX NomCognom IF NOT EXISTS FOR (i:Individu) ON (i.name, i.surname);
+CREATE INDEX NomCognomComplet IF NOT EXISTS FOR (i:Individu) ON (i.name, i.surname, i.secondSurname);
+CREATE INDEX AnyHabitatge IF NOT EXISTS FOR (h:Habitatge) ON (h.anyPadro);
+CREATE INDEX RelacioHarmonitzada IF NOT EXISTS FOR ()-[r:FAMILIA]-() ON (r.relacioHarmonitzada);
+
 
 // 3. CÀRREGA NODE: INDIVIDU
 LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTfU6oJBZhmhzzkV_0-avABPzHTdXy8851ySDbn2gq32WwaNmYxfiBtCGJGOZsMgCWjzlEGX4Zh1wqe/pub?output=csv' AS row
